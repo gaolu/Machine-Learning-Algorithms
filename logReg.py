@@ -79,21 +79,24 @@ def getErrorRate(predictResult, fileName):
 
 
 def main():
-    # train the classifier
-    fileName = 'bclass-train'
-    fLength = fileLength(fileName)
-    loadDataSet(fileName, fLength)
     maxCycles = 200
-    theta = gradAscent(dataMat, labelMat, maxCycles)
+    errorRate = {}
+    for i in range(maxCycles):
+        # train the classifier
+        fileName = 'bclass-train'
+        fLength = fileLength(fileName)
+        loadDataSet(fileName, fLength)
+        theta = gradAscent(dataMat, labelMat, i)
     
-    # predict test samples
-    fileName = 'bclass-test'
-    fLength = fileLength(fileName)
-    loadDataSet(fileName, fLength)
-    predictResult = predict(dataMat, labelMat, theta)
+        # predict test samples
+        fileName = 'bclass-test'
+        fLength = fileLength(fileName)
+        loadDataSet(fileName, fLength)
+        predictResult = predict(dataMat, labelMat, theta)
     
-    # get error rate
-    errorRate = getErrorRate(predictResult, fileName)
+        # get error rate
+        errorRate[i] = getErrorRate(predictResult, fileName)
+
     print errorRate
 
 
