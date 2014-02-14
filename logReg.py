@@ -26,15 +26,14 @@ def sigmoid(matrix):
     return 1.0 / (1 + exp(-1.0 * matrix))
 
 # core gradient ascent algorithm
-def gradAscent(dataMatrix, labels):
+def gradAscent(dataMatrix, labels, maxCycles):
     #dataMatrix = mat(dataMatIn)
     labelMatrix = labels
     numOfRows, numOfCols = shape(dataMatrix)
     #print numOfRows, numOfCols
     
-    # define the step size and max number of iterations
+    # define the step size
     alpha = 0.001
-    maxCycles = 200
     
     # initialize theta to be an all 1's array
     theta = ones((numOfCols, 1))
@@ -48,6 +47,7 @@ def gradAscent(dataMatrix, labels):
     
     return theta
 
+# classify test samples
 def classifyVector(sampleVector, theta):
     prob = sigmoid(sampleVector.dot(theta))
     if prob > 0.5: return 1
@@ -65,8 +65,8 @@ def predict(dataMatrix, labels, theta):
         predictResult.append(prob)
     return predictResult
 
-def getErrorRate(predictResult):
-    fileName = 'bclass-test'
+# calculate error rate
+def getErrorRate(predictResult, fileName):
     fLength = fileLength(fileName)
     loadDataSet(fileName, fLength)
     totalNum = len(predictResult)
@@ -77,21 +77,23 @@ def getErrorRate(predictResult):
             errorNum = errorNum + 1
     return (1.0 * errorNum) / (1.0 * totalNum)
 
+
 def main():
-    
-    # train
+    # train the classifier
     fileName = 'bclass-train'
     fLength = fileLength(fileName)
     loadDataSet(fileName, fLength)
-    theta = gradAscent(dataMat, labelMat)
+    maxCycles = 200
+    theta = gradAscent(dataMat, labelMat, maxCycles)
     
-    # predict
+    # predict test samples
     fileName = 'bclass-test'
     fLength = fileLength(fileName)
     loadDataSet(fileName, fLength)
     predictResult = predict(dataMat, labelMat, theta)
-
-    errorRate = getErrorRate(predictResult)
+    
+    # get error rate
+    errorRate = getErrorRate(predictResult, fileName)
     print errorRate
 
 
