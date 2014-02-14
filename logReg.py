@@ -1,23 +1,16 @@
+import numpy
 from numpy import *
 
 labelMat = {}
 dataMat = {}
 
 # load data set
-def loadDataSet(fileName, fLength):
+def loadDataSet(fileName):
     data = loadtxt(fileName, delimiter = '\t')
     global labelMat
     labelMat = data[:, 0 : 1]
     global dataMat
     dataMat = data[:, 1: ]
-
-# find the number of training/test samples
-def fileLength(fileName):
-    with open(fileName) as fName:
-        for i, l in enumerate(fName):
-            pass
-    fName.close()
-    return i + 1
 
 # sigmoid function computation
 def sigmoid(matrix):
@@ -67,8 +60,7 @@ def predict(dataMatrix, labels, theta):
 
 # calculate error rate
 def getErrorRate(predictResult, fileName):
-    fLength = fileLength(fileName)
-    loadDataSet(fileName, fLength)
+    loadDataSet(fileName)
     totalNum = len(predictResult)
     errorNum = 0
 
@@ -77,27 +69,45 @@ def getErrorRate(predictResult, fileName):
             errorNum = errorNum + 1
     return (1.0 * errorNum) / (1.0 * totalNum)
 
+# calculate different norms of a matrix
+def getVectorNorm(dataVector, norm):
+    return numpy.linalg.norm(dataVector, ord = norm)
+
+# normalize vectors
+def normalizeVector(dataVector, norm):
+    vectorLen = len(dataVector)
+    for i in range (vectorLen):
+        dataVector[i] = dataVector[i] / norm
+    return dataVector
+
+# normalize the whole matrix
+def normalizeMatrix(dataMatrix, norm):
+    numOfRows, numOfCols = shape(dataMatrix)
+    for i in range (numOfRows):
+        dataMatrix[i] = normalizeVector(dataMatrix[i], getVectorNorm(dataMatrix[i], norm))
+    return dataMatrix
 
 def main():
     maxCycles = 200
+    norm = 2
     errorRate = {}
     for i in range(maxCycles):
         # train the classifier
         fileName = 'bclass-train'
-        fLength = fileLength(fileName)
-        loadDataSet(fileName, fLength)
+        loadDataSet(fileName)
+        normalizeMatrix(dataMat, norm)
         theta = gradAscent(dataMat, labelMat, i)
     
         # predict test samples
         fileName = 'bclass-test'
-        fLength = fileLength(fileName)
-        loadDataSet(fileName, fLength)
+        loadDataSet(fileName)
+        normalizeMatrix(dataMat, norm)
         predictResult = predict(dataMat, labelMat, theta)
     
         # get error rate
         errorRate[i] = getErrorRate(predictResult, fileName)
 
-    print errorRate
+    print errorRate[100]
 
 
 # start from main()
